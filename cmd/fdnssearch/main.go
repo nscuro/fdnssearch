@@ -24,6 +24,8 @@ var (
 	pSearchTypes     []string
 	pConcurrency     int
 	pAlwaysSearchAny bool
+	pShowValue       bool
+	pShowType        bool
 )
 
 func init() {
@@ -31,11 +33,15 @@ func init() {
 	cmd.Flags().StringArrayVarP(&pSearchDomains, "domains", "d", make([]string, 0), "domains to search for")
 	cmd.Flags().StringArrayVarP(&pSearchTypes, "types", "t", []string{"a"}, "record types to search for")
 	cmd.Flags().IntVarP(&pConcurrency, "concurrency", "c", 10, "number of concurrent search workers")
-	cmd.Flags().BoolVarP(&pAlwaysSearchAny, "always-any", "a", false, "always search ANY dataset")
+	cmd.Flags().BoolVar(&pAlwaysSearchAny, "always-any", false, "always search ANY dataset")
+	cmd.Flags().BoolVar(&pShowValue, "show-value", false, "show record value for search results")
+	cmd.Flags().BoolVar(&pShowType, "show-type", false, "show record type for search results")
 }
 
 func runCmd(_ *cobra.Command, _ []string) {
 	searcher := search.NewSearcher(pConcurrency)
+
+	// TODO: Reduce redundancy...
 
 	if len(pDatasetFiles) > 0 {
 		for _, filePath := range pDatasetFiles {
@@ -70,7 +76,15 @@ func runCmd(_ *cobra.Command, _ []string) {
 			}()
 
 			for res := range resChan {
-				fmt.Printf(aurora.Sprintf(aurora.Green("%s\n"), res.Name))
+				if pShowValue && pShowType {
+					fmt.Printf(aurora.Sprintf(aurora.Green("%s %s %s\n"), res.Name, res.Value, res.Type))
+				} else if pShowValue {
+					fmt.Printf(aurora.Sprintf(aurora.Green("%s %s\n"), res.Name, res.Value))
+				} else if pShowType {
+					fmt.Printf(aurora.Sprintf(aurora.Green("%s %s\n"), res.Name, res.Type))
+				} else {
+					fmt.Printf(aurora.Sprintf(aurora.Green("%s\n"), res.Name))
+				}
 			}
 
 			gzipReader.Close()
@@ -132,7 +146,15 @@ func runCmd(_ *cobra.Command, _ []string) {
 			}()
 
 			for res := range resChan {
-				fmt.Printf(aurora.Sprintf(aurora.Green("%s\n"), res.Name))
+				if pShowValue && pShowType {
+					fmt.Printf(aurora.Sprintf(aurora.Green("%s %s %s\n"), res.Name, res.Value, res.Type))
+				} else if pShowValue {
+					fmt.Printf(aurora.Sprintf(aurora.Green("%s %s\n"), res.Name, res.Value))
+				} else if pShowType {
+					fmt.Printf(aurora.Sprintf(aurora.Green("%s %s\n"), res.Name, res.Type))
+				} else {
+					fmt.Printf(aurora.Sprintf(aurora.Green("%s\n"), res.Name))
+				}
 			}
 
 			gzipReader.Close()
