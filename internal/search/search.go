@@ -29,7 +29,7 @@ func searchWorker(workerCtx interface{}) {
 
 	var entry dataset.Entry
 	if err := json.Unmarshal([]byte(ctx.chunk), &entry); err != nil {
-		ctx.errorsChan <- err
+		ctx.errorsChan <- fmt.Errorf("failed to decode entry: %w", err)
 		return
 	}
 
