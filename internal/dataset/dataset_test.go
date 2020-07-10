@@ -1,12 +1,14 @@
 package dataset
 
 import (
-	"github.com/stretchr/testify/assert"
+	"context"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestFetchDatasets(t *testing.T) {
-	datasets, err := FetchDatasets()
+	datasets, err := FetchDatasets(context.Background())
 	assert.NoError(t, err)
 	assert.NotEmpty(t, datasets)
 }

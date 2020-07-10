@@ -107,7 +107,7 @@ func runCmd(_ *cobra.Command, _ []string) {
 			file.Close()
 		}
 	} else {
-		datasets, err := dataset.FetchDatasets()
+		datasets, err := dataset.FetchDatasets(ctx)
 		if err != nil {
 			fmt.Printf(aurora.Sprintf(aurora.Red("%v\n"), err))
 			return

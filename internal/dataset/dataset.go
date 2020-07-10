@@ -1,11 +1,13 @@
 package dataset
 
 import (
+	"context"
 	"fmt"
-	"github.com/PuerkitoBio/goquery"
 	"net/http"
 	"regexp"
 	"strings"
+
+	"github.com/PuerkitoBio/goquery"
 )
 
 var datasetRegex = regexp.MustCompile("^[\\d]{4}-[\\d]{2}-[\\d]{2}-[\\d]+-fdns_(?P<types>[\\w-]+)\\.json\\.gz$")
@@ -23,8 +25,13 @@ type Entry struct {
 	Timestamp int64  `json:"timestamp,string"`
 }
 
-func FetchDatasets() ([]Dataset, error) {
-	res, err := http.Get("https://opendata.rapid7.com/sonar.fdns_v2/")
+func FetchDatasets(ctx context.Context) ([]Dataset, error) {
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, "https://opendata.rapid7.com/sonar.fdns_v2/", nil)
+	if err != nil {
+		return nil, fmt.Errorf("preparing request failed: %w", err)
+	}
+
+	res, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("fetching dataset page failed: %w", err)
 	}
