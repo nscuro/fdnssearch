@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -10,8 +9,8 @@ import (
 	"time"
 
 	"github.com/klauspost/pgzip"
-	"github.com/logrusorgru/aurora"
 	"github.com/nscuro/fdnssearch/internal/dataset"
+	"github.com/nscuro/fdnssearch/internal/logging"
 	"github.com/nscuro/fdnssearch/internal/search"
 	"github.com/spf13/cobra"
 )
@@ -30,6 +29,7 @@ var (
 	pShowValue     bool
 	pShowType      bool
 	pTimeout       int64
+	pNoANSI        bool
 )
 
 func init() {
@@ -41,11 +41,17 @@ func init() {
 	cmd.Flags().BoolVar(&pShowValue, "show-value", false, "show record value for search results")
 	cmd.Flags().BoolVar(&pShowType, "show-type", false, "show record type for search results")
 	cmd.Flags().Int64Var(&pTimeout, "timeout", 0, "timeout in seconds")
-
+	cmd.Flags().BoolVar(&pNoANSI, "no-ansi", false, "disable ANSI output")
 	cmd.MarkFlagRequired("domains")
 }
 
 func runCmd(_ *cobra.Command, _ []string) {
+	logger := logging.NewLogger(os.Stderr, logging.Options{
+		Silent:       false,
+		Colorized:    !pNoANSI,
+		ResultWriter: os.Stdout,
+	})
+
 	searcher := search.NewSearcher(pConcurrency)
 
 	// TODO: Reduce redundancy...
@@ -61,17 +67,17 @@ func runCmd(_ *cobra.Command, _ []string) {
 
 	if len(pDatasetFiles) > 0 {
 		for _, filePath := range pDatasetFiles {
-			fmt.Printf(aurora.Sprintf(aurora.Blue("searching in %s\n"), filePath))
+			logger.Infof("searching in %s", filePath)
 
 			file, err := os.Open(filePath)
 			if err != nil {
-				fmt.Printf(aurora.Sprintf(aurora.Red("%v\n"), err))
+				logger.Err(err)
 				return
 			}
 
 			gzipReader, err := pgzip.NewReader(file)
 			if err != nil {
-				fmt.Printf(aurora.Sprintf(aurora.Red("%v\n"), err))
+				logger.Err(err)
 				return
 			}
 
@@ -81,25 +87,25 @@ func runCmd(_ *cobra.Command, _ []string) {
 				Types:         pSearchTypes,
 			})
 			if err != nil {
-				fmt.Printf(aurora.Sprintf(aurora.Red("%v\n"), err))
+				logger.Err(err)
 				return
 			}
 
 			go func() {
 				for err := range errChan {
-					fmt.Printf(aurora.Sprintf(aurora.Red("%v\n"), err))
+					logger.Err(err)
 				}
 			}()
 
 			for res := range resChan {
 				if pShowValue && pShowType {
-					fmt.Printf(aurora.Sprintf(aurora.Green("%s %s %s\n"), res.Name, res.Value, res.Type))
+					logger.Resultf("%s %s %s", res.Name, res.Value, res.Type)
 				} else if pShowValue {
-					fmt.Printf(aurora.Sprintf(aurora.Green("%s %s\n"), res.Name, res.Value))
+					logger.Resultf("%s %s", res.Name, res.Value)
 				} else if pShowType {
-					fmt.Printf(aurora.Sprintf(aurora.Green("%s %s\n"), res.Name, res.Type))
+					logger.Resultf("%s %s", res.Name, res.Type)
 				} else {
-					fmt.Printf(aurora.Sprintf(aurora.Green("%s\n"), res.Name))
+					logger.Resultf("%s", res.Name)
 				}
 			}
 
@@ -109,7 +115,7 @@ func runCmd(_ *cobra.Command, _ []string) {
 	} else {
 		datasets, err := dataset.FetchDatasets(ctx)
 		if err != nil {
-			fmt.Printf(aurora.Sprintf(aurora.Red("%v\n"), err))
+			logger.Err(err)
 			return
 		}
 
@@ -126,22 +132,22 @@ func runCmd(_ *cobra.Command, _ []string) {
 		}
 
 		if len(selectedDatasets) == 0 {
-			fmt.Printf(aurora.Sprintf(aurora.Red("no matching datasets for types %v found\n"), pSearchTypes))
+			logger.Errorf("no matching datasets for types %v found", pSearchTypes)
 			return
 		}
 
 		for _, selectedDataset := range selectedDatasets {
-			fmt.Printf(aurora.Sprintf(aurora.Blue("searching in %s (%s)\n"), selectedDataset.URL, selectedDataset.Fingerprint))
+			logger.Infof("searching in %s (%s)", selectedDataset.URL, selectedDataset.Fingerprint)
 
 			res, err := http.Get(selectedDataset.URL)
 			if err != nil {
-				fmt.Printf(aurora.Sprintf(aurora.Red("%v\n"), err))
+				logger.Err(err)
 				return
 			}
 
 			gzipReader, err := pgzip.NewReader(res.Body)
 			if err != nil {
-				fmt.Printf(aurora.Sprintf(aurora.Red("%v\n"), err))
+				logger.Err(err)
 				return
 			}
 
@@ -151,25 +157,25 @@ func runCmd(_ *cobra.Command, _ []string) {
 				Types:         pSearchTypes,
 			})
 			if err != nil {
-				fmt.Printf(aurora.Sprintf(aurora.Red("%v\n"), err))
+				logger.Err(err)
 				return
 			}
 
 			go func() {
 				for err := range errChan {
-					fmt.Printf(aurora.Sprintf(aurora.Red("%v\n"), err))
+					logger.Err(err)
 				}
 			}()
 
 			for res := range resChan {
 				if pShowValue && pShowType {
-					fmt.Printf(aurora.Sprintf(aurora.Green("%s %s %s\n"), res.Name, res.Value, res.Type))
+					logger.Resultf("%s %s %s", res.Name, res.Value, res.Type)
 				} else if pShowValue {
-					fmt.Printf(aurora.Sprintf(aurora.Green("%s %s\n"), res.Name, res.Value))
+					logger.Resultf("%s %s", res.Name, res.Value)
 				} else if pShowType {
-					fmt.Printf(aurora.Sprintf(aurora.Green("%s %s\n"), res.Name, res.Type))
+					logger.Resultf("%s %s", res.Name, res.Type)
 				} else {
-					fmt.Printf(aurora.Sprintf(aurora.Green("%s\n"), res.Name))
+					logger.Resultf("%s", res.Name)
 				}
 			}
 
