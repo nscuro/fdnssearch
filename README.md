@@ -20,8 +20,10 @@ Flags:
   -d, --domains stringArray   domains to search for
   -f, --files stringArray     dataset files
   -h, --help                  help for fdnssearch
+      --no-ansi               disable ANSI output
       --show-type             show record type for search results
       --show-value            show record value for search results
+      --silent                only print results, no errors or log messages
       --timeout int           timeout in seconds
   -t, --types stringArray     record types to search for (a, aaaa, cname, txt, mx) (default [a])
 ```
