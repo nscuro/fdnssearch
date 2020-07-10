@@ -10,6 +10,11 @@
 
 *fdnssearch* requires Go >= 1.14
 
+### Docker
+
+Clone this repository, `cd` into it and run `make docker`.
+The image can then be used as follows: `docker -it --rm nscuro/fdnssearch:latest -h`
+
 ## Usage
 
 ```
