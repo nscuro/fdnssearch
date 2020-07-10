@@ -11,19 +11,19 @@ fdnssearch requires Go >= 1.14
 ## Usage
 
 ```
-$ fdnssearch -h
 Usage:
   fdnssearch [flags]
 
 Flags:
-      --always-any            always search ANY dataset (ignored when -f is set)
+      --any                   additionally search ANY dataset (ignored when -f is set)
   -c, --concurrency int       number of concurrent search workers (default 10)
   -d, --domains stringArray   domains to search for
   -f, --files stringArray     dataset files
   -h, --help                  help for fdnssearch
       --show-type             show record type for search results
       --show-value            show record value for search results
-  -t, --types stringArray     record types to search for (default [a])
+      --timeout int           timeout in seconds
+  -t, --types stringArray     record types to search for (a, aaaa, cname, txt, mx) (default [a])
 ```
 
 ### Remote Datasets
@@ -31,5 +31,9 @@ Flags:
 TBD
 
 ### Local Datasets
+
+TBD
+
+### Performance
 
 TBD

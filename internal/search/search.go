@@ -2,12 +2,14 @@ package search
 
 import (
 	"bufio"
+	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/nscuro/fdnssearch/internal/dataset"
-	"github.com/panjf2000/ants"
 	"io"
 	"strings"
+
+	"github.com/nscuro/fdnssearch/internal/dataset"
+	"github.com/panjf2000/ants"
 )
 
 type searchWorkerContext struct {
@@ -77,7 +79,7 @@ func NewSearcher(workerCount int) *Searcher {
 	}
 }
 
-func (s Searcher) Search(options Options) (<-chan dataset.Entry, <-chan error, error) {
+func (s Searcher) Search(ctx context.Context, options Options) (<-chan dataset.Entry, <-chan error, error) {
 	if err := s.validateOptions(&options); err != nil {
 		return nil, nil, fmt.Errorf("invalid options: %w", err)
 	}
@@ -96,7 +98,15 @@ func (s Searcher) Search(options Options) (<-chan dataset.Entry, <-chan error, e
 		}
 
 		scanner := bufio.NewScanner(options.DatasetReader)
+	scanLoop:
 		for scanner.Scan() {
+			// handle cancellation via context
+			select {
+			case <-ctx.Done():
+				break scanLoop
+			default:
+			}
+
 			err = workerPool.Invoke(searchWorkerContext{
 				chunk:       scanner.Text(),
 				domains:     &options.Domains,
