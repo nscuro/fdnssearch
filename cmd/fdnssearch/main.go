@@ -2,15 +2,16 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"net/http"
+	"os"
+	"strings"
+
 	"github.com/klauspost/pgzip"
 	"github.com/logrusorgru/aurora"
 	"github.com/nscuro/fdnssearch/internal/dataset"
 	"github.com/nscuro/fdnssearch/internal/search"
 	"github.com/spf13/cobra"
-	"log"
-	"net/http"
-	"os"
-	"strings"
 )
 
 var (
@@ -33,7 +34,7 @@ func init() {
 	cmd.Flags().StringArrayVarP(&pSearchDomains, "domains", "d", make([]string, 0), "domains to search for")
 	cmd.Flags().StringArrayVarP(&pSearchTypes, "types", "t", []string{"a"}, "record types to search for")
 	cmd.Flags().IntVarP(&pConcurrency, "concurrency", "c", 10, "number of concurrent search workers")
-	cmd.Flags().BoolVar(&pAlwaysSearchAny, "always-any", false, "always search ANY dataset")
+	cmd.Flags().BoolVar(&pAlwaysSearchAny, "always-any", false, "always search ANY dataset (ignored when -f is set)")
 	cmd.Flags().BoolVar(&pShowValue, "show-value", false, "show record value for search results")
 	cmd.Flags().BoolVar(&pShowType, "show-type", false, "show record type for search results")
 }
