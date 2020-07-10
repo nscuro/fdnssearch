@@ -15,6 +15,7 @@ import (
 type searchWorkerContext struct {
 	chunk       string
 	domains     *[]string
+	exclusions  *[]string
 	types       *[]string
 	resultsChan chan<- dataset.Entry
 	errorsChan  chan<- error
@@ -60,12 +61,27 @@ func searchWorker(workerCtx interface{}) {
 		}
 	}
 
+	// filter by exclusion
+	if len(*ctx.exclusions) > 0 {
+		found := false
+		for _, exclusion := range *ctx.exclusions {
+			if entry.Name == exclusion || strings.HasSuffix(entry.Name, "."+exclusion) {
+				found = true
+				break
+			}
+		}
+		if found {
+			return
+		}
+	}
+
 	ctx.resultsChan <- entry
 }
 
 type Options struct {
 	DatasetReader io.Reader
 	Domains       []string
+	Exclusions    []string
 	Types         []string
 }
 
@@ -110,6 +126,7 @@ func (s Searcher) Search(ctx context.Context, options Options) (<-chan dataset.E
 			err = workerPool.Invoke(searchWorkerContext{
 				chunk:       scanner.Text(),
 				domains:     &options.Domains,
+				exclusions:  &options.Exclusions,
 				types:       &options.Types,
 				resultsChan: resultsChan,
 				errorsChan:  errorsChan,

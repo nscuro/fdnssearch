@@ -21,21 +21,23 @@ var (
 		Run: runCmd,
 	}
 
-	pDatasetFiles  []string
-	pSearchDomains []string
-	pSearchTypes   []string
-	pConcurrency   int
-	pAny           bool
-	pShowValue     bool
-	pShowType      bool
-	pTimeout       int64
-	pSilent        bool
-	pNoANSI        bool
+	pDatasetFiles    []string
+	pSearchDomains   []string
+	pExcludedDomains []string
+	pSearchTypes     []string
+	pConcurrency     int
+	pAny             bool
+	pShowValue       bool
+	pShowType        bool
+	pTimeout         int64
+	pSilent          bool
+	pNoANSI          bool
 )
 
 func init() {
 	cmd.Flags().StringArrayVarP(&pDatasetFiles, "files", "f", make([]string, 0), "dataset files")
 	cmd.Flags().StringArrayVarP(&pSearchDomains, "domains", "d", make([]string, 0), "domains to search for")
+	cmd.Flags().StringArrayVarP(&pExcludedDomains, "excludes", "e", make([]string, 0), "domains to exclude from search")
 	cmd.Flags().StringArrayVarP(&pSearchTypes, "types", "t", []string{"a"}, "record types to search for (a, aaaa, cname, txt, mx)")
 	cmd.Flags().IntVarP(&pConcurrency, "concurrency", "c", 10, "number of concurrent search workers")
 	cmd.Flags().BoolVar(&pAny, "any", false, "additionally search ANY dataset (ignored when -f is set)")
@@ -86,6 +88,7 @@ func runCmd(_ *cobra.Command, _ []string) {
 			resChan, errChan, err := searcher.Search(ctx, search.Options{
 				DatasetReader: gzipReader,
 				Domains:       pSearchDomains,
+				Exclusions:    pExcludedDomains,
 				Types:         pSearchTypes,
 			})
 			if err != nil {
@@ -156,6 +159,7 @@ func runCmd(_ *cobra.Command, _ []string) {
 			resChan, errChan, err := searcher.Search(ctx, search.Options{
 				DatasetReader: gzipReader,
 				Domains:       pSearchDomains,
+				Exclusions:    pExcludedDomains,
 				Types:         pSearchTypes,
 			})
 			if err != nil {
