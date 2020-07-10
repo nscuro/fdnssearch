@@ -4,7 +4,7 @@
 
 ## Installation
 
-`GO111MOD=on go get -v github.com/nscuro/fdnssearch/cmd/fdnssearch`
+`GO111MODULE=on go get -v github.com/nscuro/fdnssearch/cmd/fdnssearch`
 
 fdnssearch requires Go >= 1.14
 
