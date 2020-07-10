@@ -28,6 +28,20 @@ Flags:
   -t, --types stringArray     record types to search for (a, aaaa, cname, txt, mx) (default [a])
 ```
 
+### Examples
+
+Searching for `A` and `CNAME` records of subdomains of `example.de` and `example.com`, using `25` concurrent search workers:
+
+```
+fdnssearch -d example.de -d example.com -t a -t cname -c 25
+```
+
+Searching for `A` records of subdomains of `example.com`, disabling colored output and writing results to `results.txt`:
+
+```
+$ fdnssearch -d example.com --no-ansi | tee results.txt
+```
+
 ### Remote Datasets
 
 TBD
