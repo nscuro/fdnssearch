@@ -29,6 +29,7 @@ var (
 	pShowValue     bool
 	pShowType      bool
 	pTimeout       int64
+	pSilent        bool
 	pNoANSI        bool
 )
 
@@ -41,13 +42,14 @@ func init() {
 	cmd.Flags().BoolVar(&pShowValue, "show-value", false, "show record value for search results")
 	cmd.Flags().BoolVar(&pShowType, "show-type", false, "show record type for search results")
 	cmd.Flags().Int64Var(&pTimeout, "timeout", 0, "timeout in seconds")
+	cmd.Flags().BoolVar(&pSilent, "silent", false, "only print results, no errors or log messages")
 	cmd.Flags().BoolVar(&pNoANSI, "no-ansi", false, "disable ANSI output")
 	cmd.MarkFlagRequired("domains")
 }
 
 func runCmd(_ *cobra.Command, _ []string) {
 	logger := logging.NewLogger(os.Stderr, logging.Options{
-		Silent:       false,
+		Silent:       pSilent,
 		Colorized:    !pNoANSI,
 		ResultWriter: os.Stdout,
 	})

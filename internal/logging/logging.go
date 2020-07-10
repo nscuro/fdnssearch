@@ -37,21 +37,29 @@ func NewLogger(writer io.Writer, options Options) *Logger {
 }
 
 func (l Logger) Infoln(msg string) {
-	fmt.Fprintln(l.writer, l.a.Sprintf(l.a.Blue(msg)))
+	l.println(l.writer, l.a.Sprintf(l.a.Blue(msg)))
 }
 
 func (l Logger) Infof(format string, args ...interface{}) {
-	fmt.Fprintln(l.writer, l.a.Sprintf(l.a.Blue(format), args...))
+	l.println(l.writer, l.a.Sprintf(l.a.Blue(format), args...))
 }
 
 func (l Logger) Errorf(format string, args ...interface{}) {
-	fmt.Fprintln(l.writer, l.a.Sprintf(l.a.Red(format), args...))
+	l.println(l.writer, l.a.Sprintf(l.a.Red(format), args...))
 }
 
 func (l Logger) Err(err error) {
-	fmt.Fprintln(l.writer, l.a.Sprintf(l.a.Red("%v"), err))
+	l.println(l.writer, l.a.Sprintf(l.a.Red("%v"), err))
 }
 
 func (l Logger) Resultf(format string, args ...interface{}) {
-	fmt.Fprintln(l.writer, l.a.Sprintf(l.a.Green(format), args...))
+	fmt.Fprintln(l.resultWriter, l.a.Sprintf(l.a.Green(format), args...))
+}
+
+func (l Logger) println(writer io.Writer, msg string) {
+	if l.silent {
+		return
+	}
+
+	fmt.Fprintln(writer, msg)
 }
