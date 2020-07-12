@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"strings"
+	"sync"
 
 	"github.com/nscuro/fdnssearch/internal/dataset"
 	"github.com/panjf2000/ants"
@@ -19,6 +20,7 @@ type searchWorkerContext struct {
 	types       *[]string
 	resultsChan chan<- dataset.Entry
 	errorsChan  chan<- error
+	waitGroup   *sync.WaitGroup
 }
 
 func searchWorker(workerCtx interface{}) {
@@ -26,6 +28,9 @@ func searchWorker(workerCtx interface{}) {
 	if !ok {
 		return
 	}
+
+	ctx.waitGroup.Add(1)
+	defer ctx.waitGroup.Done()
 
 	var entry dataset.Entry
 	if err := json.Unmarshal([]byte(ctx.chunk), &entry); err != nil {
@@ -113,6 +118,9 @@ func (s Searcher) Search(ctx context.Context, options Options) (<-chan dataset.E
 			return
 		}
 
+		// wait group for search workers
+		waitGroup := sync.WaitGroup{}
+
 		scanner := bufio.NewScanner(options.DatasetReader)
 	scanLoop:
 		for scanner.Scan() {
@@ -130,6 +138,7 @@ func (s Searcher) Search(ctx context.Context, options Options) (<-chan dataset.E
 				types:       &options.Types,
 				resultsChan: resultsChan,
 				errorsChan:  errorsChan,
+				waitGroup:   &waitGroup,
 			})
 			if err != nil {
 				errorsChan <- fmt.Errorf("failed to submit chunk to worker pool: %w", err)
@@ -137,13 +146,7 @@ func (s Searcher) Search(ctx context.Context, options Options) (<-chan dataset.E
 			}
 		}
 
-		// wait for workers to finish
-		for {
-			if workerPool.Free() == workerPool.Cap() {
-				break
-			}
-		}
-
+		waitGroup.Wait()
 		workerPool.Release()
 	}()
 
