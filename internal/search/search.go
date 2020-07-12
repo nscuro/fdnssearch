@@ -26,10 +26,10 @@ type searchWorkerContext struct {
 func searchWorker(workerCtx interface{}) {
 	ctx, ok := workerCtx.(searchWorkerContext)
 	if !ok {
-		return
+		// should never ever happen. if this fails,
+		// we cannot call waitGroup.Done(), causing deadlocks
+		panic("unexpected invocation argument type")
 	}
-
-	ctx.waitGroup.Add(1)
 	defer ctx.waitGroup.Done()
 
 	var entry dataset.Entry
@@ -131,6 +131,7 @@ func (s Searcher) Search(ctx context.Context, options Options) (<-chan dataset.E
 			default:
 			}
 
+			waitGroup.Add(1)
 			err = workerPool.Invoke(searchWorkerContext{
 				chunk:       scanner.Text(),
 				domains:     &options.Domains,
