@@ -19,10 +19,9 @@ type Dataset struct {
 }
 
 type Entry struct {
-	Name      string `json:"name"`
-	Value     string `json:"value"`
-	Type      string `json:"type"`
-	Timestamp int64  `json:"timestamp,string"`
+	Name  string `json:"name"`
+	Value string `json:"value"`
+	Type  string `json:"type"`
 }
 
 func FetchDatasets(ctx context.Context) ([]Dataset, error) {
