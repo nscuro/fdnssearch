@@ -17,3 +17,6 @@
 # IntelliJ / GoLand
 .idea/
 *.iml
+
+# Results of example pipeline
+examples/*.txt
