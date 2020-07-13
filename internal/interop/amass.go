@@ -2,7 +2,12 @@ package interop
 
 import "github.com/go-ini/ini"
 
-func ParseAmassConfig(filePath string) ([]string, error) {
+type AmassConfig struct {
+	Domains     []string
+	Blacklisted []string
+}
+
+func ParseAmassConfig(filePath string) (*AmassConfig, error) {
 	cfg, err := ini.LoadSources(ini.LoadOptions{
 		Insensitive:  true,
 		AllowShadows: true,
@@ -11,15 +16,22 @@ func ParseAmassConfig(filePath string) ([]string, error) {
 		return nil, err
 	}
 
-	domainsSection, err := cfg.GetSection("domains")
-	if err != nil {
-		return nil, err
-	}
-
 	domains := make([]string, 0)
-	for _, domain := range domainsSection.Key("domain").ValueWithShadows() {
-		domains = append(domains, domain)
+	if domainsSection, err := cfg.GetSection("domains"); err == nil {
+		for _, domain := range domainsSection.Key("domain").ValueWithShadows() {
+			domains = append(domains, domain)
+		}
 	}
 
-	return domains, nil
+	blacklisted := make([]string, 0)
+	if blacklistedSection, err := cfg.GetSection("blacklisted"); err == nil {
+		for _, subdomain := range blacklistedSection.Key("subdomain").ValueWithShadows() {
+			blacklisted = append(blacklisted, subdomain)
+		}
+	}
+
+	return &AmassConfig{
+		Domains:     domains,
+		Blacklisted: blacklisted,
+	}, nil
 }

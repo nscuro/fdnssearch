@@ -87,7 +87,7 @@ $ sort --unique -o results_dedupe.txt results.txt
 
 #### Amass
 
-*fdnssearch* can parse target domains from [Amass](https://github.com/OWASP/Amass) config files:
+*fdnssearch* can parse target domains and exclusions from [Amass](https://github.com/OWASP/Amass) config files:
 
 ```
 $ grep -C 5 "\[domains\]" amass.ini | tail -6
@@ -95,5 +95,14 @@ $ grep -C 5 "\[domains\]" amass.ini | tail -6
 domain = example.com
 domain = example.de
 domain = example.fr
+$ grep -C 1 "\[blacklisted\]" amass.ini | tail -2
+[blacklisted]
+subdomain = acme.example.com
 $ fdnssearch --amass-config amass.ini
+```
+
+This is equivalent to
+
+```
+$ fdnssearch -d example.com -d example.de -d example.fr -e acme.example.com
 ```

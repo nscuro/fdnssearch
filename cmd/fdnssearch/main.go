@@ -72,13 +72,20 @@ func runCmd(_ *cobra.Command, _ []string) {
 	}
 
 	if pAmassConfig != "" {
-		logger.Infof("parsing domains from %s", pAmassConfig)
-		amassDomains, err := interop.ParseAmassConfig(pAmassConfig)
+		logger.Infof("parsing amass config from %s", pAmassConfig)
+		amassCfg, err := interop.ParseAmassConfig(pAmassConfig)
 		if err != nil {
 			logger.Err(err)
 			return
 		}
-		pSearchDomains = append(pSearchDomains, amassDomains...)
+		if len(amassCfg.Domains) > 0 {
+			logger.Infof("parsed domains: %v", amassCfg.Domains)
+			pSearchDomains = append(pSearchDomains, amassCfg.Domains...)
+		}
+		if len(amassCfg.Blacklisted) > 0 {
+			logger.Infof("parsed exclusions: %v", amassCfg.Blacklisted)
+			pExcludedDomains = append(pExcludedDomains, amassCfg.Blacklisted...)
+		}
 	}
 
 	if len(pDatasetFiles) > 0 {

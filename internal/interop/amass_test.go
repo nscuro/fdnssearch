@@ -7,10 +7,14 @@ import (
 )
 
 func TestParseAmassConfig(t *testing.T) {
-	domains, err := ParseAmassConfig("./testdata/amass.ini")
+	cfg, err := ParseAmassConfig("./testdata/amass.ini")
 	assert.NoError(t, err)
-	assert.Len(t, domains, 3)
-	assert.Contains(t, domains, "example.com")
-	assert.Contains(t, domains, "example.de")
-	assert.Contains(t, domains, "example.fr")
+
+	assert.Len(t, cfg.Domains, 3)
+	assert.Contains(t, cfg.Domains, "example.com")
+	assert.Contains(t, cfg.Domains, "example.de")
+	assert.Contains(t, cfg.Domains, "example.fr")
+
+	assert.Len(t, cfg.Blacklisted, 1)
+	assert.Contains(t, cfg.Blacklisted, "acme.example.com")
 }
