@@ -10,6 +10,7 @@ import (
 
 	"github.com/klauspost/pgzip"
 	"github.com/nscuro/fdnssearch/internal/dataset"
+	"github.com/nscuro/fdnssearch/internal/interop"
 	"github.com/nscuro/fdnssearch/internal/logging"
 	"github.com/nscuro/fdnssearch/internal/search"
 	"github.com/spf13/cobra"
@@ -32,6 +33,7 @@ var (
 	pTimeout         int64
 	pSilent          bool
 	pNoANSI          bool
+	pAmassConfig     string
 )
 
 func init() {
@@ -46,7 +48,7 @@ func init() {
 	cmd.Flags().Int64Var(&pTimeout, "timeout", 0, "timeout in seconds")
 	cmd.Flags().BoolVar(&pSilent, "silent", false, "only print results, no errors or log messages")
 	cmd.Flags().BoolVar(&pNoANSI, "no-ansi", false, "disable ANSI output")
-	cmd.MarkFlagRequired("domains")
+	cmd.Flags().StringVar(&pAmassConfig, "amass-config", "", "amass config to load domains from")
 }
 
 func runCmd(_ *cobra.Command, _ []string) {
@@ -67,6 +69,16 @@ func runCmd(_ *cobra.Command, _ []string) {
 		defer cancel()
 	} else {
 		ctx = context.Background()
+	}
+
+	if pAmassConfig != "" {
+		logger.Infof("parsing domains from %s", pAmassConfig)
+		amassDomains, err := interop.ParseAmassConfig(pAmassConfig)
+		if err != nil {
+			logger.Err(err)
+			return
+		}
+		pSearchDomains = append(pSearchDomains, amassDomains...)
 	}
 
 	if len(pDatasetFiles) > 0 {
