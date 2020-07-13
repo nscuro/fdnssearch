@@ -2,7 +2,7 @@
 
 ![Build Status](https://github.com/nscuro/fdnssearch/workflows/Continuous%20Integration/badge.svg?branch=master)
 
-**Disclaimer**: You can do everything *fdnssearch* does with [`bash`, `curl`, `pigz`, `jq` and GNU `parallel`](https://github.com/rapid7/sonar/wiki/Forward-DNS).  
+**Disclaimer**: You can do most of what *fdnssearch* does with [`bash`, `curl`, `pigz`, `jq` and GNU `parallel`](https://github.com/rapid7/sonar/wiki/Forward-DNS).  
 This is nothing revolutionary, I made this because I prefer simple commands over wonky shell scripts.
 
 ## Installation
@@ -87,7 +87,7 @@ $ sort --unique -o results_dedupe.txt results.txt
 
 #### Amass
 
-*fdnssearch* can parse target domains and exclusions from [Amass](https://github.com/OWASP/Amass) config files:
+*fdnssearch* can parse target domains and exclusions from [Amass config files](https://github.com/OWASP/Amass/blob/master/examples/config.ini):
 
 ```bash
 $ grep -C 5 "\[domains\]" amass.ini | tail -6
