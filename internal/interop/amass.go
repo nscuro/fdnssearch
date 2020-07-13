@@ -11,14 +11,14 @@ func ParseAmassConfig(filePath string) ([]string, error) {
 		return nil, err
 	}
 
-	domains := make([]string, 0)
-
-	if domainsSection, err := cfg.GetSection("domains"); err == nil {
-		for _, domain := range domainsSection.Key("domain").ValueWithShadows() {
-			domains = append(domains, domain)
-		}
-	} else {
+	domainsSection, err := cfg.GetSection("domains")
+	if err != nil {
 		return nil, err
+	}
+
+	domains := make([]string, 0)
+	for _, domain := range domainsSection.Key("domain").ValueWithShadows() {
+		domains = append(domains, domain)
 	}
 
 	return domains, nil

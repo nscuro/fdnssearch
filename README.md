@@ -82,3 +82,18 @@ Given a file `results.txt` which only contains record names, deduplication can b
 ```
 $ sort --unique -o results_dedupe.txt results.txt
 ```
+
+### Interoparability
+
+#### Amass
+
+*fdnssearch* can parse target domains from [Amass](https://github.com/OWASP/Amass) config files:
+
+```
+$ grep -C 5 "\[domains\]" amass.ini | tail -6
+[domains]
+domain = example.com
+domain = example.de
+domain = example.fr
+$ fdnssearch --amass-config amass.ini
+```
