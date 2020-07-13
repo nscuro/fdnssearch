@@ -43,13 +43,13 @@ Errors and log messages are written to `STDERR`, search results to `STDOUT`. Thi
 
 Searching for `A` and `CNAME` records of subdomains of `example.de` and `example.com`, using `25` concurrent search workers:
 
-```
-fdnssearch -d example.de -d example.com -t a -t cname -c 25
+```bash
+$ fdnssearch -d example.de -d example.com -t a -t cname -c 25
 ```
 
 Searching for `AAAA` and `TXT` records of subdomains of `example.com`, disabling colored output and writing results to `results.txt`:
 
-```
+```bash
 $ fdnssearch -d example.com -t aaaa -t txt --no-ansi | tee results.txt
 ```
 
@@ -79,7 +79,7 @@ TBD
 
 Given a file `results.txt` which only contains record names, deduplication can be achieved with:
 
-```
+```bash
 $ sort --unique -o results_dedupe.txt results.txt
 ```
 
@@ -89,7 +89,7 @@ $ sort --unique -o results_dedupe.txt results.txt
 
 *fdnssearch* can parse target domains and exclusions from [Amass](https://github.com/OWASP/Amass) config files:
 
-```
+```bash
 $ grep -C 5 "\[domains\]" amass.ini | tail -6
 [domains]
 domain = example.com
@@ -103,6 +103,6 @@ $ fdnssearch --amass-config amass.ini
 
 This is equivalent to
 
-```
+```bash
 $ fdnssearch -d example.com -d example.de -d example.fr -e acme.example.com
 ```
