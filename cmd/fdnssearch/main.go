@@ -148,6 +148,7 @@ func runCmd(_ *cobra.Command, _ []string) {
 			for _, ds := range datasets {
 				for _, datasetType := range ds.Types {
 					if (pAny && datasetType == "any") || strings.ToLower(searchType) == datasetType {
+						logger.Infof("selected dataset %s", ds.URL)
 						selectedDatasets = append(selectedDatasets, ds)
 						break
 					}
