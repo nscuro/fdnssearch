@@ -67,11 +67,17 @@ If you want your search to include this dataset as well, use the `--any` flag. B
 
 ### Local Datasets
 
-TBD
+It is possible to search local dataset files as well:
+
+```bash
+$ fdnssearch -f /path/to/datasets/2020-05-23-1590208726-fdns_a.json.gz -d example.com
+```
 
 ### Performance
 
-TBD
+*fdnssearch* utilizes the `klauspost/pgzip` library for [performant gzip decompression](https://github.com/klauspost/pgzip#decompression-1).
+Decompressed dataset entries are immediately submitted to a pool of [goroutines](https://golangbot.com/goroutines/) ("*search workers*") that take care of parsing and filtering. 
+The size of this pool can be manipulated using the `-c` / `--concurrency` flag. The faster the source medium (internet connection, HDD, SSD), the bigger the pool should be for optimal performance.
 
 ### Deduplication
 
