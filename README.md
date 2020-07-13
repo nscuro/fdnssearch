@@ -23,6 +23,7 @@ Usage:
   fdnssearch [flags]
 
 Flags:
+      --amass-config string    amass config to load domains from
       --any                    additionally search ANY dataset (ignored when -f is set)
   -c, --concurrency int        number of concurrent search workers (default 10)
   -d, --domains stringArray    domains to search for
