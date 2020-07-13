@@ -104,11 +104,11 @@ func runCmd(_ *cobra.Command, _ []string) {
 
 			for res := range resChan {
 				if pShowValue && pShowType {
-					logger.Resultf("%s %s %s", res.Name, res.Value, res.Type)
+					logger.Resultf("%s,%s,%s", res.Name, res.Value, strings.ToUpper(res.Type))
 				} else if pShowValue {
-					logger.Resultf("%s %s", res.Name, res.Value)
+					logger.Resultf("%s,%s", res.Name, res.Value)
 				} else if pShowType {
-					logger.Resultf("%s %s", res.Name, res.Type)
+					logger.Resultf("%s,%s", res.Name, strings.ToUpper(res.Type))
 				} else {
 					logger.Resultf("%s", res.Name)
 				}
@@ -142,7 +142,7 @@ func runCmd(_ *cobra.Command, _ []string) {
 		}
 
 		for _, selectedDataset := range selectedDatasets {
-			logger.Infof("searching in %s (%s)", selectedDataset.URL, selectedDataset.Fingerprint)
+			logger.Infof("searching in %s", selectedDataset.URL)
 
 			res, err := http.Get(selectedDataset.URL)
 			if err != nil {
@@ -175,11 +175,11 @@ func runCmd(_ *cobra.Command, _ []string) {
 
 			for res := range resChan {
 				if pShowValue && pShowType {
-					logger.Resultf("%s %s %s", res.Name, res.Value, res.Type)
+					logger.Resultf("%s,%s,%s", res.Name, res.Value, strings.ToUpper(res.Type))
 				} else if pShowValue {
-					logger.Resultf("%s %s", res.Name, res.Value)
+					logger.Resultf("%s,%s", res.Name, res.Value)
 				} else if pShowType {
-					logger.Resultf("%s %s", res.Name, res.Type)
+					logger.Resultf("%s,%s", res.Name, strings.ToUpper(res.Type))
 				} else {
 					logger.Resultf("%s", res.Name)
 				}
