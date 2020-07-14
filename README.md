@@ -38,7 +38,7 @@ Flags:
   -t, --types stringArray      record types to search for (a, aaaa, cname, txt, mx) (default [a])
 ```
 
-Errors and log messages are written to `STDERR`, search results to `STDOUT`. This allows for easy piping without the need to use `--silent`. When piping results to other commands, make sure to disable colored output with `--no-ansi`.
+Errors and log messages are written to `STDERR`, search results to `STDOUT`. This allows for easy piping without the need to use `--quiet`. When piping results to other commands, make sure to disable colored output with `--plain`.
 
 ### Examples
 
@@ -51,7 +51,7 @@ $ fdnssearch -d example.de -d example.com -t a -t cname -c 25
 Searching for `AAAA` and `TXT` records of subdomains of `example.com`, disabling colored output and writing results to `results.txt`:
 
 ```bash
-$ fdnssearch -d example.com -t aaaa -t txt --no-ansi | tee results.txt
+$ fdnssearch -d example.com -t aaaa -t txt --plain | tee results.txt
 ```
 
 ### Remote Datasets
@@ -87,7 +87,7 @@ The size of this pool can be manipulated using the `-c` / `--concurrency` flag. 
 Given a file `results.txt` which only contains record names, deduplication can be achieved with:
 
 ```bash
-$ sort --unique -o results_dedupe.txt results.txt
+$ sort --unique -o results.txt results.txt
 ```
 
 ### Interoparability
