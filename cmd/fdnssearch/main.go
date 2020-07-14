@@ -31,8 +31,8 @@ var (
 	pShowValue       bool
 	pShowType        bool
 	pTimeout         int64
-	pSilent          bool
-	pNoANSI          bool
+	pQuiet           bool
+	pPlain           bool
 	pAmassConfig     string
 )
 
@@ -42,19 +42,19 @@ func init() {
 	cmd.Flags().StringArrayVarP(&pExcludedDomains, "excludes", "e", make([]string, 0), "domains to exclude from search")
 	cmd.Flags().StringArrayVarP(&pSearchTypes, "types", "t", []string{"a"}, "record types to search for (a, aaaa, cname, txt, mx)")
 	cmd.Flags().IntVarP(&pConcurrency, "concurrency", "c", 10, "number of concurrent search workers")
-	cmd.Flags().BoolVar(&pAny, "any", false, "additionally search ANY dataset (ignored when -f is set)")
+	cmd.Flags().BoolVarP(&pAny, "any", "a", false, "additionally search ANY dataset (ignored when -f is set)")
 	cmd.Flags().BoolVar(&pShowValue, "show-value", false, "show record value for search results")
 	cmd.Flags().BoolVar(&pShowType, "show-type", false, "show record type for search results")
 	cmd.Flags().Int64Var(&pTimeout, "timeout", 0, "timeout in seconds")
-	cmd.Flags().BoolVar(&pSilent, "silent", false, "only print results, no errors or log messages")
-	cmd.Flags().BoolVar(&pNoANSI, "no-ansi", false, "disable ANSI output")
+	cmd.Flags().BoolVarP(&pQuiet, "quiet", "q", false, "only print results, no errors or log messages")
+	cmd.Flags().BoolVar(&pPlain, "plain", false, "disable colored output")
 	cmd.Flags().StringVar(&pAmassConfig, "amass-config", "", "amass config to load domains from")
 }
 
 func runCmd(_ *cobra.Command, _ []string) {
 	logger := logging.NewLogger(os.Stderr, logging.Options{
-		Silent:       pSilent,
-		Colorized:    !pNoANSI,
+		Silent:       pQuiet,
+		Colorized:    !pPlain,
 		ResultWriter: os.Stdout,
 	})
 

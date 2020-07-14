@@ -24,16 +24,16 @@ Usage:
 
 Flags:
       --amass-config string    amass config to load domains from
-      --any                    additionally search ANY dataset (ignored when -f is set)
+  -a, --any                    additionally search ANY dataset (ignored when -f is set)
   -c, --concurrency int        number of concurrent search workers (default 10)
   -d, --domains stringArray    domains to search for
   -e, --excludes stringArray   domains to exclude from search
   -f, --files stringArray      dataset files
   -h, --help                   help for fdnssearch
-      --no-ansi                disable ANSI output
+      --plain                  disable colored output
+  -q, --quiet                  only print results, no errors or log messages
       --show-type              show record type for search results
       --show-value             show record value for search results
-      --silent                 only print results, no errors or log messages
       --timeout int            timeout in seconds
   -t, --types stringArray      record types to search for (a, aaaa, cname, txt, mx) (default [a])
 ```
