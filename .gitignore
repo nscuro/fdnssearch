@@ -20,3 +20,6 @@
 
 # Results of example pipeline
 examples/*.txt
+
+# Build artifacts
+dist/

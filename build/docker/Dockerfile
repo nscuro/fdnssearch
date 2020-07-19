@@ -1,9 +1,9 @@
 FROM golang:1.14-alpine as build
-RUN apk --no-cache add git
+RUN apk --no-cache add build-base gcc git
 WORKDIR /opt/fdnssearch
 COPY . .
-RUN GO111MODULE=on go build -v ./cmd/fdnssearch
+RUN make install
 
 FROM alpine:latest
-COPY --from=build /opt/fdnssearch/fdnssearch /bin/fdnssearch
+COPY --from=build /go/bin/fdnssearch /bin/fdnssearch
 ENTRYPOINT [ "/bin/fdnssearch" ]
