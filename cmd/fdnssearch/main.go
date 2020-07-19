@@ -146,12 +146,19 @@ func runCmd(_ *cobra.Command, _ []string) {
 		selectedDatasets := make([]dataset.Dataset, 0)
 		for _, searchType := range pSearchTypes {
 			for _, ds := range datasets {
-				for _, datasetType := range ds.Types {
-					if (pAny && datasetType == "any") || strings.ToLower(searchType) == datasetType {
-						logger.Infof("selected dataset %s", ds.URL)
-						selectedDatasets = append(selectedDatasets, ds)
-						break
-					}
+				if ds.HasType(searchType) {
+					logger.Infof("selected dataset %s", ds.URL)
+					selectedDatasets = append(selectedDatasets, ds)
+				}
+			}
+		}
+
+		if pAny {
+			for _, ds := range datasets {
+				if ds.HasType("any") {
+					logger.Infof("selected dataset %s", ds.URL)
+					selectedDatasets = append(selectedDatasets, ds)
+					break
 				}
 			}
 		}

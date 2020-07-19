@@ -18,6 +18,15 @@ type Dataset struct {
 	URL         string
 }
 
+func (d Dataset) HasType(dtype string) bool {
+	for i := range d.Types {
+		if d.Types[i] == strings.ToLower(dtype) {
+			return true
+		}
+	}
+	return false
+}
+
 type Entry struct {
 	Name  string `json:"name"`
 	Value string `json:"value"`
