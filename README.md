@@ -9,12 +9,14 @@ This is nothing revolutionary, I made this because I prefer simple commands over
 
 `GO111MODULE=on go get -v github.com/nscuro/fdnssearch/cmd/fdnssearch`
 
+Alternatively, clone this repo and run `make install`. Make sure `$GOPATH/bin` is in your `$PATH`.
+
 *fdnssearch* requires Go >= 1.14
 
 ### Docker
 
 Clone this repository, `cd` into it and run `make docker`.  
-The image can then be used as follows: `docker -it --rm nscuro/fdnssearch:latest -h`
+The image can then be used as follows: `docker -it --rm nscuro/fdnssearch -h`
 
 ## Usage
 
@@ -102,9 +104,11 @@ $ grep -C 5 "\[domains\]" amass.ini | tail -6
 domain = example.com
 domain = example.de
 domain = example.fr
+
 $ grep -C 1 "\[blacklisted\]" amass.ini | tail -2
 [blacklisted]
 subdomain = acme.example.com
+
 $ fdnssearch --amass-config amass.ini
 ```
 
