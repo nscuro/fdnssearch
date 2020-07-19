@@ -32,6 +32,20 @@ func searchWorker(workerCtx interface{}) {
 	}
 	defer ctx.waitGroup.Done()
 
+	// prevent the necessity to decode entries that definitely
+	// do not match the given search criteria. decoding json appears
+	// to be drastically more computationally expensive than this.
+	possibleMatch := false
+	for _, domain := range *ctx.domains {
+		if strings.Contains(ctx.chunk, domain) {
+			possibleMatch = true
+			break
+		}
+	}
+	if !possibleMatch {
+		return
+	}
+
 	var entry dataset.Entry
 	if err := json.Unmarshal([]byte(ctx.chunk), &entry); err != nil {
 		ctx.errorsChan <- fmt.Errorf("failed to decode entry: %w", err)
