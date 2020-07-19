@@ -123,7 +123,7 @@ func TestSearchWorkerError(t *testing.T) {
 
 	waitGroup.Add(1)
 	go searchWorker(searchWorkerContext{
-		chunk:       "invalidjson",
+		chunk:       "invalidJsonThatContainsexample.com",
 		domains:     &[]string{"example.com"},
 		exclusions:  &[]string{},
 		types:       &[]string{},
