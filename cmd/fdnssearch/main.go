@@ -41,7 +41,7 @@ func init() {
 	cmd.Flags().StringArrayVarP(&pSearchDomains, "domains", "d", make([]string, 0), "domains to search for")
 	cmd.Flags().StringArrayVarP(&pExcludedDomains, "excludes", "e", make([]string, 0), "domains to exclude from search")
 	cmd.Flags().StringArrayVarP(&pSearchTypes, "types", "t", []string{"a"}, "record types to search for (a, aaaa, cname, txt, mx)")
-	cmd.Flags().IntVarP(&pConcurrency, "concurrency", "c", 10, "number of concurrent search workers")
+	cmd.Flags().IntVarP(&pConcurrency, "concurrency", "c", 100, "number of concurrent search workers")
 	cmd.Flags().BoolVarP(&pAny, "any", "a", false, "additionally search ANY dataset (ignored when -f is set)")
 	cmd.Flags().BoolVar(&pShowValue, "show-value", false, "show record value for search results")
 	cmd.Flags().BoolVar(&pShowType, "show-type", false, "show record type for search results")
