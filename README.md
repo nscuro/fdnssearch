@@ -13,6 +13,8 @@ Alternatively, clone this repo and run `make install`. Make sure `$GOPATH/bin` i
 
 *fdnssearch* requires Go >= 1.14
 
+Prebuilt binaries are available [as well](https://github.com/nscuro/fdnssearch/releases/).
+
 ### Docker
 
 Clone this repository, `cd` into it and run `make docker`.  
