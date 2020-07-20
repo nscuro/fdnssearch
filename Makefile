@@ -32,13 +32,13 @@ windows:
 darwin:
 	GOOS=darwin GOARCH=amd64 GO111MODULE=on CGO_ENABLED=0 \
 	go build -ldflags=${LDFLAGS} -gcflags=${GCFLAGS} -asmflags=${ASMFLAGS} \
-		-o ${DIST_DIR}/fdnssearch-darwin-amd64.exe ./cmd/fdnssearch	
+		-o ${DIST_DIR}/fdnssearch-darwin-amd64 ./cmd/fdnssearch	
 .PHONY: darwin
 
 linux:
 	GOOS=linux GOARCH=amd64 GO111MODULE=on CGO_ENABLED=0 \
 	go build -ldflags=${LDFLAGS} -gcflags=${GCFLAGS} -asmflags=${ASMFLAGS} \
-		-o ${DIST_DIR}/fdnssearch-linux-amd64.exe ./cmd/fdnssearch
+		-o ${DIST_DIR}/fdnssearch-linux-amd64 ./cmd/fdnssearch
 .PHONY: linux
 
 clean:
