@@ -29,7 +29,7 @@ Usage:
 Flags:
       --amass-config string    amass config to load domains from
   -a, --any                    additionally search ANY dataset (ignored when -f is set)
-  -c, --concurrency int        number of concurrent search workers (default 10)
+  -c, --concurrency int        number of concurrent search workers (default 100)
   -d, --domains stringArray    domains to search for
   -e, --excludes stringArray   domains to exclude from search
   -f, --files stringArray      dataset files
