@@ -9,10 +9,6 @@ before:
 builds:
   - id: "fdnssearch"
     main: ./cmd/fdnssearch/main.go
-    asmflags:
-      - all=-trimpath={{.Env.GOPATH}}
-    gcflags:
-      - all=-trimpath={{.Env.GOPATH}}
     env:
       - GO111MODULE=on
       - CGO_ENABLED=0
