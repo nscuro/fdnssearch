@@ -11,6 +11,10 @@ test:
 	go test -v ./...
 .PHONY: test
 
+bench:
+	go test -bench=. ./...
+.PHONY: bench
+
 install:
 	go install -ldflags=${LDFLAGS} -gcflags=${GCFLAGS} -asmflags=${ASMFLAGS} -v ./cmd/fdnssearch
 .PHONY: install
@@ -46,3 +50,4 @@ clean:
 .PHONY: clean
 
 all: clean build test pre-dist windows darwin linux
+.PHONY: all
