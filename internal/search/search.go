@@ -3,7 +3,6 @@ package search
 import (
 	"bufio"
 	"context"
-	"encoding/json"
 	"fmt"
 	"io"
 	"strings"
@@ -11,16 +10,18 @@ import (
 
 	"github.com/nscuro/fdnssearch/internal/dataset"
 	"github.com/panjf2000/ants"
+	"github.com/valyala/fastjson"
 )
 
 type searchWorkerContext struct {
-	chunk       string
-	domains     *[]string
-	exclusions  *[]string
-	types       *[]string
-	resultsChan chan<- dataset.Entry
-	errorsChan  chan<- error
-	waitGroup   *sync.WaitGroup
+	chunk          string
+	domains        *[]string
+	exclusions     *[]string
+	types          *[]string
+	jsonParserPool *fastjson.ParserPool
+	resultsChan    chan<- dataset.Entry
+	errorsChan     chan<- error
+	waitGroup      *sync.WaitGroup
 }
 
 func searchWorker(workerCtx interface{}) {
@@ -32,69 +33,94 @@ func searchWorker(workerCtx interface{}) {
 	}
 	defer ctx.waitGroup.Done()
 
+	entry, err := filter(ctx.chunk, ctx.types, ctx.domains, ctx.exclusions, ctx.jsonParserPool)
+	if err != nil {
+		ctx.errorsChan <- err
+		return
+	} else if entry == nil {
+		return
+	}
+
+	ctx.resultsChan <- *entry
+}
+
+func filter(chunk string, types *[]string, domains *[]string, exclusions *[]string, jsonParserPool *fastjson.ParserPool) (*dataset.Entry, error) {
 	// prevent the necessity to decode entries that definitely
-	// do not match the given search criteria. decoding json appears
-	// to be drastically more computationally expensive than this.
+	// do not match the given search criteria. decoding json is
+	// drastically more computationally expensive than this simple
+	// loop.
 	possibleMatch := false
-	for _, domain := range *ctx.domains {
-		if strings.Contains(ctx.chunk, domain) {
+	for _, domain := range *domains {
+		if strings.Contains(chunk, domain) {
 			possibleMatch = true
 			break
 		}
 	}
 	if !possibleMatch {
-		return
+		return nil, nil
 	}
 
-	var entry dataset.Entry
-	if err := json.Unmarshal([]byte(ctx.chunk), &entry); err != nil {
-		ctx.errorsChan <- fmt.Errorf("failed to decode entry: %w", err)
-		return
+	jsonParser := jsonParserPool.Get()
+	parsedEntry, err := jsonParser.Parse(chunk)
+	if err != nil {
+		jsonParserPool.Put(jsonParser)
+		return nil, fmt.Errorf("failed to parse entry: %w", err)
 	}
+
+	// parse everything we need in advance so jsonParser can
+	// be put back into the pool as fast as possible
+	entryName := string(parsedEntry.GetStringBytes("name"))
+	entryValue := string(parsedEntry.GetStringBytes("value"))
+	entryType := string(parsedEntry.GetStringBytes("type"))
+	jsonParserPool.Put(jsonParser)
 
 	// filter by type
-	if len(*ctx.types) > 0 {
+	if len(*types) > 0 {
 		found := false
-		for _, ttype := range *ctx.types {
-			if entry.Type == ttype {
+		for _, ttype := range *types {
+			if entryType == ttype {
 				found = true
 				break
 			}
 		}
 		if !found {
-			return
+			return nil, nil
 		}
 	}
 
 	// filter by domain
-	if len(*ctx.domains) > 0 {
+	if len(*domains) > 0 {
 		found := false
-		for _, domain := range *ctx.domains {
-			if entry.Name == domain || strings.HasSuffix(entry.Name, "."+domain) {
+		for _, domain := range *domains {
+			if entryName == domain || strings.HasSuffix(entryName, "."+domain) {
 				found = true
 				break
 			}
 		}
 		if !found {
-			return
+			return nil, nil
 		}
 	}
 
 	// filter by exclusion
-	if len(*ctx.exclusions) > 0 {
+	if len(*exclusions) > 0 {
 		found := false
-		for _, exclusion := range *ctx.exclusions {
-			if entry.Name == exclusion || strings.HasSuffix(entry.Name, "."+exclusion) {
+		for _, exclusion := range *exclusions {
+			if entryName == exclusion || strings.HasSuffix(entryName, "."+exclusion) {
 				found = true
 				break
 			}
 		}
 		if found {
-			return
+			return nil, nil
 		}
 	}
 
-	ctx.resultsChan <- entry
+	return &dataset.Entry{
+		Name:  entryName,
+		Type:  entryType,
+		Value: entryValue,
+	}, nil
 }
 
 type Options struct {
@@ -105,7 +131,8 @@ type Options struct {
 }
 
 type Searcher struct {
-	workerCount int
+	workerCount    int
+	jsonParserPool fastjson.ParserPool
 }
 
 func NewSearcher(workerCount int) *Searcher {
@@ -135,6 +162,10 @@ func (s Searcher) Search(ctx context.Context, options Options) (<-chan dataset.E
 		// wait group for search workers
 		waitGroup := sync.WaitGroup{}
 
+		// pool for fastjson.Parser to encourage reusing
+		// of instances without causing race conditions
+		jsonParserPool := fastjson.ParserPool{}
+
 		scanner := bufio.NewScanner(options.DatasetReader)
 	scanLoop:
 		for scanner.Scan() {
@@ -147,13 +178,14 @@ func (s Searcher) Search(ctx context.Context, options Options) (<-chan dataset.E
 
 			waitGroup.Add(1)
 			err = workerPool.Invoke(searchWorkerContext{
-				chunk:       scanner.Text(),
-				domains:     &options.Domains,
-				exclusions:  &options.Exclusions,
-				types:       &options.Types,
-				resultsChan: resultsChan,
-				errorsChan:  errorsChan,
-				waitGroup:   &waitGroup,
+				chunk:          scanner.Text(),
+				domains:        &options.Domains,
+				exclusions:     &options.Exclusions,
+				types:          &options.Types,
+				jsonParserPool: &jsonParserPool,
+				resultsChan:    resultsChan,
+				errorsChan:     errorsChan,
+				waitGroup:      &waitGroup,
 			})
 			if err != nil {
 				errorsChan <- fmt.Errorf("failed to submit chunk to worker pool: %w", err)

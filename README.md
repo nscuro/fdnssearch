@@ -2,12 +2,13 @@
 
 ![Build Status](https://github.com/nscuro/fdnssearch/workflows/Continuous%20Integration/badge.svg?branch=master)
 
-**Disclaimer**: You can do most of what *fdnssearch* does with [`bash`, `curl`, `pigz`, `jq` and GNU `parallel`](https://github.com/rapid7/sonar/wiki/Forward-DNS).  
-This is nothing revolutionary, I made this because I prefer simple commands over wonky shell scripts.
+*Swiftly search [FDNS](ttps://github.com/rapid7/sonar/wiki/Forward-DNS) datasets from Rapid7 Open Data*
+
+**Disclaimer**: You can do most of what *fdnssearch* does with [`bash`, `curl`, `pigz`, `jq` and GNU `parallel`](https://github.com/rapid7/sonar/wiki/Analyzing-Datasets). This is nothing revolutionary.
 
 ## Installation
 
-`GO111MODULE=on go get -v github.com/nscuro/fdnssearch/cmd/fdnssearch`
+`GO111MODULE=on go get -v github.com/nscuro/fdnssearch/...`
 
 Alternatively, clone this repo and run `make install`. Make sure `$GOPATH/bin` is in your `$PATH`.
 
