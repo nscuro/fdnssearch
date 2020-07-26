@@ -136,7 +136,7 @@ func (s Searcher) Search(ctx context.Context, options Options) (<-chan dataset.E
 		return nil, nil, fmt.Errorf("invalid options: %w", err)
 	}
 
-	resultsChan := make(chan dataset.Entry)
+	resultsChan := make(chan dataset.Entry, 10)
 	errorsChan := make(chan error)
 
 	go func() {
