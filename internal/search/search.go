@@ -9,7 +9,6 @@ import (
 	"sync"
 
 	"github.com/nscuro/fdnssearch/internal/dataset"
-	"github.com/panjf2000/ants"
 	"github.com/valyala/fastjson"
 )
 
@@ -24,13 +23,7 @@ type searchWorkerContext struct {
 	waitGroup      *sync.WaitGroup
 }
 
-func searchWorker(workerCtx interface{}) {
-	ctx, ok := workerCtx.(searchWorkerContext)
-	if !ok {
-		// should never ever happen. if this fails,
-		// we cannot call waitGroup.Done(), causing deadlocks
-		panic("unexpected invocation argument type")
-	}
+func searchWorker(ctx searchWorkerContext) {
 	defer ctx.waitGroup.Done()
 
 	entry, err := filter(ctx.chunk, ctx.types, ctx.domains, ctx.exclusions, ctx.jsonParserPool)
@@ -131,14 +124,11 @@ type Options struct {
 }
 
 type Searcher struct {
-	workerCount    int
 	jsonParserPool fastjson.ParserPool
 }
 
-func NewSearcher(workerCount int) *Searcher {
-	return &Searcher{
-		workerCount: workerCount,
-	}
+func NewSearcher() *Searcher {
+	return &Searcher{}
 }
 
 func (s Searcher) Search(ctx context.Context, options Options) (<-chan dataset.Entry, <-chan error, error) {
@@ -146,18 +136,12 @@ func (s Searcher) Search(ctx context.Context, options Options) (<-chan dataset.E
 		return nil, nil, fmt.Errorf("invalid options: %w", err)
 	}
 
-	resultsChan := make(chan dataset.Entry, s.workerCount)
-	errorsChan := make(chan error, s.workerCount)
+	resultsChan := make(chan dataset.Entry)
+	errorsChan := make(chan error)
 
 	go func() {
 		defer close(resultsChan)
 		defer close(errorsChan)
-
-		workerPool, err := ants.NewPoolWithFunc(s.workerCount, searchWorker)
-		if err != nil {
-			errorsChan <- err
-			return
-		}
 
 		// wait group for search workers
 		waitGroup := sync.WaitGroup{}
@@ -177,7 +161,7 @@ func (s Searcher) Search(ctx context.Context, options Options) (<-chan dataset.E
 			}
 
 			waitGroup.Add(1)
-			err = workerPool.Invoke(searchWorkerContext{
+			go searchWorker(searchWorkerContext{
 				chunk:          scanner.Text(),
 				domains:        &options.Domains,
 				exclusions:     &options.Exclusions,
@@ -187,14 +171,9 @@ func (s Searcher) Search(ctx context.Context, options Options) (<-chan dataset.E
 				errorsChan:     errorsChan,
 				waitGroup:      &waitGroup,
 			})
-			if err != nil {
-				errorsChan <- fmt.Errorf("failed to submit chunk to worker pool: %w", err)
-				break
-			}
 		}
 
 		waitGroup.Wait()
-		workerPool.Release()
 	}()
 
 	return resultsChan, errorsChan, nil

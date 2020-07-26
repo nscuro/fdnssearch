@@ -9,7 +9,6 @@ require (
 	github.com/klauspost/compress v1.10.10 // indirect
 	github.com/klauspost/pgzip v1.2.4
 	github.com/logrusorgru/aurora v2.0.3+incompatible
-	github.com/panjf2000/ants v1.3.0
 	github.com/smartystreets/goconvey v1.6.4 // indirect
 	github.com/spf13/cobra v1.0.0
 	github.com/spf13/pflag v1.0.5 // indirect

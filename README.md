@@ -30,15 +30,12 @@ Usage:
 Flags:
       --amass-config string    amass config to load domains from
   -a, --any                    additionally search ANY dataset (ignored when -f is set)
-  -c, --concurrency int        number of concurrent search workers (default 100)
   -d, --domains stringArray    domains to search for
   -e, --excludes stringArray   domains to exclude from search
   -f, --files stringArray      dataset files
   -h, --help                   help for fdnssearch
       --plain                  disable colored output
   -q, --quiet                  only print results, no errors or log messages
-      --show-type              show record type for search results
-      --show-value             show record value for search results
       --timeout int            timeout in seconds
   -t, --types stringArray      record types to search for (a, aaaa, cname, txt, mx) (default [a])
 ```
@@ -47,10 +44,10 @@ Errors and log messages are written to `STDERR`, search results to `STDOUT`. Thi
 
 ### Examples
 
-Searching for `A` and `CNAME` records of subdomains of `example.de` and `example.com`, using `25` concurrent search workers:
+Searching for `A` and `CNAME` records of subdomains of `example.de` and `example.com`:
 
 ```bash
-$ fdnssearch -d example.de -d example.com -t a -t cname -c 25
+$ fdnssearch -d example.de -d example.com -t a -t cname
 ```
 
 Searching for `AAAA` and `TXT` records of subdomains of `example.com`, disabling colored output and writing results to `results.txt`:
@@ -82,8 +79,9 @@ $ fdnssearch -f /path/to/datasets/2020-05-23-1590208726-fdns_a.json.gz -d exampl
 ### Performance
 
 *fdnssearch* utilizes the `klauspost/pgzip` library for [performant gzip decompression](https://github.com/klauspost/pgzip#decompression-1).
-Decompressed dataset entries are immediately submitted to a pool of [goroutines](https://golangbot.com/goroutines/) ("*search workers*") that take care of parsing and filtering. 
-The size of this pool can be manipulated using the `-c` / `--concurrency` flag. The faster the source medium (internet connection, HDD, SSD), the bigger the pool should be for optimal performance.
+Each decompressed dataset entry immediately spawns a [goroutine](https://golangbot.com/goroutines/) ("*search worker*") that takes care of 
+filtering and parsing. This means that the faster your source medium (internet connection, HDD or SSD), the more goroutines will run concurrently.
+I/O really is the only limiting factor here, no matter where you load your datasets from.
 
 ### Deduplication
 

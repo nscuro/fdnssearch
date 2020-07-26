@@ -5,7 +5,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"strings"
 	"time"
 
 	"github.com/klauspost/pgzip"
@@ -26,10 +25,7 @@ var (
 	pSearchDomains   []string
 	pExcludedDomains []string
 	pSearchTypes     []string
-	pConcurrency     int
 	pAny             bool
-	pShowValue       bool
-	pShowType        bool
 	pTimeout         int64
 	pQuiet           bool
 	pPlain           bool
@@ -41,10 +37,7 @@ func init() {
 	cmd.Flags().StringArrayVarP(&pSearchDomains, "domains", "d", make([]string, 0), "domains to search for")
 	cmd.Flags().StringArrayVarP(&pExcludedDomains, "excludes", "e", make([]string, 0), "domains to exclude from search")
 	cmd.Flags().StringArrayVarP(&pSearchTypes, "types", "t", []string{"a"}, "record types to search for (a, aaaa, cname, txt, mx)")
-	cmd.Flags().IntVarP(&pConcurrency, "concurrency", "c", 100, "number of concurrent search workers")
 	cmd.Flags().BoolVarP(&pAny, "any", "a", false, "additionally search ANY dataset (ignored when -f is set)")
-	cmd.Flags().BoolVar(&pShowValue, "show-value", false, "show record value for search results")
-	cmd.Flags().BoolVar(&pShowType, "show-type", false, "show record type for search results")
 	cmd.Flags().Int64Var(&pTimeout, "timeout", 0, "timeout in seconds")
 	cmd.Flags().BoolVarP(&pQuiet, "quiet", "q", false, "only print results, no errors or log messages")
 	cmd.Flags().BoolVar(&pPlain, "plain", false, "disable colored output")
@@ -58,7 +51,7 @@ func runCmd(_ *cobra.Command, _ []string) {
 		ResultWriter: os.Stdout,
 	})
 
-	searcher := search.NewSearcher(pConcurrency)
+	searcher := search.NewSearcher()
 
 	// TODO: Reduce redundancy...
 
@@ -122,15 +115,7 @@ func runCmd(_ *cobra.Command, _ []string) {
 			}()
 
 			for res := range resChan {
-				if pShowValue && pShowType {
-					logger.Resultf("%s,%s,%s", res.Name, res.Value, strings.ToUpper(res.Type))
-				} else if pShowValue {
-					logger.Resultf("%s,%s", res.Name, res.Value)
-				} else if pShowType {
-					logger.Resultf("%s,%s", res.Name, strings.ToUpper(res.Type))
-				} else {
-					logger.Resultf("%s", res.Name)
-				}
+				logger.Resultf("%s", res.Name)
 			}
 
 			gzipReader.Close()
@@ -201,15 +186,7 @@ func runCmd(_ *cobra.Command, _ []string) {
 			}()
 
 			for res := range resChan {
-				if pShowValue && pShowType {
-					logger.Resultf("%s,%s,%s", res.Name, res.Value, strings.ToUpper(res.Type))
-				} else if pShowValue {
-					logger.Resultf("%s,%s", res.Name, res.Value)
-				} else if pShowType {
-					logger.Resultf("%s,%s", res.Name, strings.ToUpper(res.Type))
-				} else {
-					logger.Resultf("%s", res.Name)
-				}
+				logger.Resultf("%s", res.Name)
 			}
 
 			gzipReader.Close()
