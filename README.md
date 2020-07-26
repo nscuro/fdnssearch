@@ -4,7 +4,7 @@
 
 *Swiftly search [FDNS](ttps://github.com/rapid7/sonar/wiki/Forward-DNS) datasets from Rapid7 Open Data*
 
-**Disclaimer**: You can do most of what *fdnssearch* does with [`bash`, `curl`, `pigz`, `jq` and GNU `parallel`](https://github.com/rapid7/sonar/wiki/Analyzing-Datasets). This is nothing revolutionary.
+**Disclaimer**: You can do most of what *fdnssearch* does with [`bash`, `curl`, `pigz`, `jq` and GNU `parallel`](https://github.com/rapid7/sonar/wiki/Analyzing-Datasets). This is nothing revolutionary. *fdnssearch* simply is nicer to use and 
 
 ## Installation
 
@@ -82,6 +82,25 @@ $ fdnssearch -f /path/to/datasets/2020-05-23-1590208726-fdns_a.json.gz -d exampl
 Each decompressed dataset entry immediately spawns a [goroutine](https://golangbot.com/goroutines/) ("*search worker*") that takes care of 
 filtering and parsing. This means that the faster your source medium (internet connection, HDD or SSD), the more goroutines will run concurrently.
 I/O really is the only limiting factor here, no matter where you load your datasets from.
+
+For me, *fdnssearch* is even quite a bit faster than the `pigz`, `parallel` and `jq` approach:
+
+```bash
+$ time pigz -dc /path/to/datasets/2020-06-28-1593366733-fdns_cname.json.gz \
+    | parallel --gnu --pipe "grep '\.google\.com'" \
+    | parallel --gnu --pipe "jq '. | select(.name | endswith(\".google.com\")) | .name'" \
+    > /dev/null
+pigz -dc /path/to/datasets/2020-06-28-1593366733-fdns_cname.json.gz  62.84s user 41.95s system 113% cpu 1:32.02 total
+parallel --gnu --pipe "grep '\.google\.com'"  185.31s user 78.92s system 287% cpu 1:32.02 total
+parallel --gnu --pipe  > /dev/null  6.12s user 1.08s system 7% cpu 1:32.06 total
+
+$ time fdnssearch -d google.com -t cname \
+    -f /path/to/datasets/2020-06-28-1593366733-fdns_cname.json.gz \
+    --quiet > /dev/null
+fdnssearch -d google.com -t cname -f  --quiet > /dev/null  405.62s user 60.74s system 683% cpu 1:08.26 total
+```
+
+This is with an [Intel i7 8700K](https://ark.intel.com/content/www/us/en/ark/products/126684/intel-core-i7-8700k-processor-12m-cache-up-to-4-70-ghz.html) and a [Samsung 970 EVO NVMe M.2 SSD](https://www.samsung.com/us/computing/memory-storage/solid-state-drives/ssd-970-evo-nvme-m2-500gb-mz-v7e500bw/) on Windows 10 in WSL 2. Your mileage may vary.
 
 ### Deduplication
 
