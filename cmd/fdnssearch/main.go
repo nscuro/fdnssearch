@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"runtime"
 	"time"
 
 	"github.com/klauspost/pgzip"
@@ -20,6 +21,9 @@ var (
 		Use: "fdnssearch",
 		Run: runCmd,
 	}
+
+	pgzipBlocks    = runtime.NumCPU()
+	pgzipBlockSize = 5000000 // 5MB
 
 	pDatasetFiles    []string
 	pSearchDomains   []string
@@ -91,7 +95,7 @@ func runCmd(_ *cobra.Command, _ []string) {
 				return
 			}
 
-			gzipReader, err := pgzip.NewReader(file)
+			gzipReader, err := pgzip.NewReaderN(file, pgzipBlockSize, pgzipBlocks)
 			if err != nil {
 				logger.Err(err)
 				return
@@ -162,7 +166,7 @@ func runCmd(_ *cobra.Command, _ []string) {
 				return
 			}
 
-			gzipReader, err := pgzip.NewReader(res.Body)
+			gzipReader, err := pgzip.NewReaderN(res.Body, pgzipBlockSize, pgzipBlocks)
 			if err != nil {
 				logger.Err(err)
 				return
