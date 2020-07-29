@@ -53,7 +53,7 @@ func (l Logger) Err(err error) {
 }
 
 func (l Logger) Resultf(format string, args ...interface{}) {
-	fmt.Fprintln(l.resultWriter, l.a.Sprintf(l.a.Green(format), args...))
+	l.println(l.resultWriter, l.a.Sprintf(l.a.Green(format), args...))
 }
 
 func (l Logger) println(writer io.Writer, msg string) {

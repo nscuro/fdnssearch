@@ -2,6 +2,9 @@ package main
 
 import (
 	"context"
+	"fmt"
+	"io"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -34,6 +37,7 @@ var (
 	pQuiet           bool
 	pPlain           bool
 	pAmassConfig     string
+	pOutput          string
 )
 
 func init() {
@@ -46,6 +50,7 @@ func init() {
 	cmd.Flags().BoolVarP(&pQuiet, "quiet", "q", false, "only print results, no errors or log messages")
 	cmd.Flags().BoolVar(&pPlain, "plain", false, "disable colored output")
 	cmd.Flags().StringVar(&pAmassConfig, "amass-config", "", "amass config to load domains from")
+	cmd.Flags().StringVarP(&pOutput, "output", "o", "", "output file")
 }
 
 func runCmd(_ *cobra.Command, _ []string) {
@@ -85,6 +90,19 @@ func runCmd(_ *cobra.Command, _ []string) {
 		}
 	}
 
+	var resultsWriter io.Writer
+	if pOutput == "" || pOutput == "-" {
+		resultsWriter = ioutil.Discard
+	} else {
+		outputFile, err := os.Create(pOutput)
+		if err != nil {
+			logger.Errorf("failed to create output file: %v", err)
+			return
+		}
+		defer outputFile.Close()
+		resultsWriter = outputFile
+	}
+
 	if len(pDatasetFiles) > 0 {
 		for _, filePath := range pDatasetFiles {
 			logger.Infof("searching in %s", filePath)
@@ -120,6 +138,7 @@ func runCmd(_ *cobra.Command, _ []string) {
 
 			for res := range resChan {
 				logger.Resultf("%s", res.Name)
+				fmt.Fprintln(resultsWriter, res.Name)
 			}
 
 			gzipReader.Close()
@@ -191,6 +210,7 @@ func runCmd(_ *cobra.Command, _ []string) {
 
 			for res := range resChan {
 				logger.Resultf("%s", res.Name)
+				fmt.Fprintln(resultsWriter, res.Name)
 			}
 
 			gzipReader.Close()

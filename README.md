@@ -34,6 +34,7 @@ Flags:
   -e, --excludes stringArray   domains to exclude from search
   -f, --files stringArray      dataset files
   -h, --help                   help for fdnssearch
+  -o, --output string          output file
       --plain                  disable colored output
   -q, --quiet                  only print results, no errors or log messages
       --timeout int            timeout in seconds
