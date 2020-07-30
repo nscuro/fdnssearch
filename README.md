@@ -23,13 +23,14 @@ The image can then be used as follows: `docker -it --rm nscuro/fdnssearch -h`
 
 ## Usage
 
-```
+```                                                  
 Usage:
   fdnssearch [flags]
 
 Flags:
       --amass-config string    amass config to load domains from
   -a, --any                    additionally search ANY dataset (ignored when -f is set)
+      --any-only               only search ANY dataset (ignored when -f is set)
   -d, --domains stringArray    domains to search for
   -e, --excludes stringArray   domains to exclude from search
   -f, --files stringArray      dataset files
