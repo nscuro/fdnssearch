@@ -33,6 +33,7 @@ var (
 	pExcludedDomains []string
 	pSearchTypes     []string
 	pAny             bool
+	pAnyOnly         bool
 	pTimeout         int64
 	pQuiet           bool
 	pPlain           bool
@@ -46,6 +47,7 @@ func init() {
 	cmd.Flags().StringArrayVarP(&pExcludedDomains, "excludes", "e", make([]string, 0), "domains to exclude from search")
 	cmd.Flags().StringArrayVarP(&pSearchTypes, "types", "t", []string{"a"}, "record types to search for (a, aaaa, cname, txt, mx)")
 	cmd.Flags().BoolVarP(&pAny, "any", "a", false, "additionally search ANY dataset (ignored when -f is set)")
+	cmd.Flags().BoolVar(&pAnyOnly, "any-only", false, "only search ANY dataset (ignored when -f is set)")
 	cmd.Flags().Int64Var(&pTimeout, "timeout", 0, "timeout in seconds")
 	cmd.Flags().BoolVarP(&pQuiet, "quiet", "q", false, "only print results, no errors or log messages")
 	cmd.Flags().BoolVar(&pPlain, "plain", false, "disable colored output")
@@ -152,16 +154,18 @@ func runCmd(_ *cobra.Command, _ []string) {
 		}
 
 		selectedDatasets := make([]dataset.Dataset, 0)
-		for _, searchType := range pSearchTypes {
-			for _, ds := range datasets {
-				if ds.HasType(searchType) {
-					logger.Infof("selected dataset %s", ds.URL)
-					selectedDatasets = append(selectedDatasets, ds)
+		if !pAnyOnly {
+			for _, searchType := range pSearchTypes {
+				for _, ds := range datasets {
+					if ds.HasType(searchType) {
+						logger.Infof("selected dataset %s", ds.URL)
+						selectedDatasets = append(selectedDatasets, ds)
+					}
 				}
 			}
 		}
 
-		if pAny {
+		if pAny || pAnyOnly {
 			for _, ds := range datasets {
 				if ds.HasType("any") {
 					logger.Infof("selected dataset %s", ds.URL)
