@@ -28,18 +28,19 @@ Usage:
   fdnssearch [flags]
 
 Flags:
-      --amass-config string    amass config to load domains from
-  -a, --any                    additionally search ANY dataset (ignored when -f is set)
-      --any-only               only search ANY dataset (ignored when -f is set)
-  -d, --domains stringArray    domains to search for
-  -e, --excludes stringArray   domains to exclude from search
-  -f, --files stringArray      dataset files
+      --amass-config string    Amass config to load domains from
+  -a, --any                    Additionally search ANY dataset (ignored when -f is set)
+      --any-only               Only search ANY dataset (ignored when -f is set)
+  -d, --domains stringArray    Domains to search for
+  -e, --excludes stringArray   Domains to exclude from search
+  -f, --files stringArray      Dataset files
   -h, --help                   help for fdnssearch
-  -o, --output string          output file
-      --plain                  disable colored output
-  -q, --quiet                  only print results, no errors or log messages
-      --timeout int            timeout in seconds
-  -t, --types stringArray      record types to search for (a, aaaa, cname, txt, mx) (default [a])
+  -o, --output string          Output file
+      --plain                  Disable colored output
+  -q, --quiet                  Only print results, no errors or log messages
+      --timeout int            Timeout in seconds
+  -t, --types stringArray      Record types to search for (a, aaaa, cname, txt, mx) (default [a])
+  -v, --version                Show version
 ```
 
 Errors and log messages are written to `STDERR`, search results to `STDOUT`. This allows for easy piping without the need to use `--quiet`. 
