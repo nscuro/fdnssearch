@@ -16,6 +16,7 @@ import (
 	"github.com/nscuro/fdnssearch/internal/interop"
 	"github.com/nscuro/fdnssearch/internal/logging"
 	"github.com/nscuro/fdnssearch/internal/search"
+	"github.com/nscuro/fdnssearch/internal/version"
 	"github.com/spf13/cobra"
 )
 
@@ -39,23 +40,30 @@ var (
 	pPlain           bool
 	pAmassConfig     string
 	pOutput          string
+	pVersion         bool
 )
 
 func init() {
-	cmd.Flags().StringArrayVarP(&pDatasetFiles, "files", "f", make([]string, 0), "dataset files")
-	cmd.Flags().StringArrayVarP(&pSearchDomains, "domains", "d", make([]string, 0), "domains to search for")
-	cmd.Flags().StringArrayVarP(&pExcludedDomains, "excludes", "e", make([]string, 0), "domains to exclude from search")
-	cmd.Flags().StringArrayVarP(&pSearchTypes, "types", "t", []string{"a"}, "record types to search for (a, aaaa, cname, txt, mx)")
-	cmd.Flags().BoolVarP(&pAny, "any", "a", false, "additionally search ANY dataset (ignored when -f is set)")
-	cmd.Flags().BoolVar(&pAnyOnly, "any-only", false, "only search ANY dataset (ignored when -f is set)")
-	cmd.Flags().Int64Var(&pTimeout, "timeout", 0, "timeout in seconds")
-	cmd.Flags().BoolVarP(&pQuiet, "quiet", "q", false, "only print results, no errors or log messages")
-	cmd.Flags().BoolVar(&pPlain, "plain", false, "disable colored output")
-	cmd.Flags().StringVar(&pAmassConfig, "amass-config", "", "amass config to load domains from")
-	cmd.Flags().StringVarP(&pOutput, "output", "o", "", "output file")
+	cmd.Flags().StringArrayVarP(&pDatasetFiles, "files", "f", make([]string, 0), "Dataset files")
+	cmd.Flags().StringArrayVarP(&pSearchDomains, "domains", "d", make([]string, 0), "Domains to search for")
+	cmd.Flags().StringArrayVarP(&pExcludedDomains, "excludes", "e", make([]string, 0), "Domains to exclude from search")
+	cmd.Flags().StringArrayVarP(&pSearchTypes, "types", "t", []string{"a"}, "Record types to search for (a, aaaa, cname, txt, mx)")
+	cmd.Flags().BoolVarP(&pAny, "any", "a", false, "Additionally search ANY dataset (ignored when -f is set)")
+	cmd.Flags().BoolVar(&pAnyOnly, "any-only", false, "Only search ANY dataset (ignored when -f is set)")
+	cmd.Flags().Int64Var(&pTimeout, "timeout", 0, "Timeout in seconds")
+	cmd.Flags().BoolVarP(&pQuiet, "quiet", "q", false, "Only print results, no errors or log messages")
+	cmd.Flags().BoolVar(&pPlain, "plain", false, "Disable colored output")
+	cmd.Flags().StringVar(&pAmassConfig, "amass-config", "", "Amass config to load domains from")
+	cmd.Flags().StringVarP(&pOutput, "output", "o", "", "Output file")
+	cmd.Flags().BoolVarP(&pVersion, "version", "v", false, "Show version")
 }
 
 func runCmd(_ *cobra.Command, _ []string) {
+	if pVersion {
+		fmt.Println(version.Version)
+		return
+	}
+
 	logger := logging.NewLogger(os.Stderr, logging.Options{
 		Silent:       pQuiet,
 		Colorized:    !pPlain,

@@ -12,6 +12,8 @@ builds:
     env:
       - GO111MODULE=on
       - CGO_ENABLED=0
+    ldflags:
+      - -s -w -X github.com/nscuro/fdnssearch/internal/version.Version={{.Version}}
     goos:
       - windows
       - linux

@@ -1,5 +1,5 @@
 DIST_DIR=./dist
-LDFLAGS="-s -w"
+LDFLAGS="-s -w -X github.com/nscuro/fdnssearch/internal/version.Version=$(shell git describe --tags)"
 GCFLAGS="all=-trimpath=$(shell pwd)"
 ASMFLAGS="all=-trimpath=$(shell pwd)"
 
