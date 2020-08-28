@@ -5,7 +5,7 @@ go 1.14
 require (
 	github.com/PuerkitoBio/goquery v1.5.1
 	github.com/andybalholm/cascadia v1.2.0 // indirect
-	github.com/go-ini/ini v1.60.1
+	github.com/go-ini/ini v1.60.2
 	github.com/klauspost/compress v1.10.10 // indirect
 	github.com/klauspost/pgzip v1.2.4
 	github.com/logrusorgru/aurora v2.0.3+incompatible
