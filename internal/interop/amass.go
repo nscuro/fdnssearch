@@ -22,9 +22,19 @@ func ParseAmassConfig(filePath string) (*AmassConfig, error) {
 			domains = append(domains, domain)
 		}
 	}
+	if domainsSection, err := cfg.GetSection("scope.domains"); err == nil {
+		for _, domain := range domainsSection.Key("domain").ValueWithShadows() {
+			domains = append(domains, domain)
+		}
+	}
 
 	blacklisted := make([]string, 0)
 	if blacklistedSection, err := cfg.GetSection("blacklisted"); err == nil {
+		for _, subdomain := range blacklistedSection.Key("subdomain").ValueWithShadows() {
+			blacklisted = append(blacklisted, subdomain)
+		}
+	}
+	if blacklistedSection, err := cfg.GetSection("scope.blacklisted"); err == nil {
 		for _, subdomain := range blacklistedSection.Key("subdomain").ValueWithShadows() {
 			blacklisted = append(blacklisted, subdomain)
 		}
