@@ -7,7 +7,7 @@ require (
 	github.com/andybalholm/cascadia v1.2.0 // indirect
 	github.com/go-ini/ini v1.60.2
 	github.com/klauspost/compress v1.10.10 // indirect
-	github.com/klauspost/pgzip v1.2.4
+	github.com/klauspost/pgzip v1.2.5
 	github.com/logrusorgru/aurora v2.0.3+incompatible
 	github.com/logrusorgru/aurora/v3 v3.0.0
 	github.com/smartystreets/goconvey v1.6.4 // indirect
