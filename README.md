@@ -4,7 +4,7 @@
 
 *Swiftly search [FDNS](ttps://github.com/rapid7/sonar/wiki/Forward-DNS) datasets from Rapid7 Open Data*
 
-**Disclaimer**: You can do most of what *fdnssearch* does with [`bash`, `curl`, `pigz` and `jq`](https://github.com/rapid7/sonar/wiki/Analyzing-Datasets). This is nothing revolutionary. *fdnssearch* simply offers a [nicer UX](#usage) and some [QoL features](#interoparability). 
+**Disclaimer**: You can do most of what *fdnssearch* does with [`bash`, `curl`, `pigz` and `jq`](https://github.com/rapid7/sonar/wiki/Analyzing-Datasets). This is nothing revolutionary. *fdnssearch* simply offers a [nicer UX](#usage) and some [QoL features](#interoparability). If you prefer a server-based solution, take a look at the [amazing Crobat project](https://github.com/Cgboal/SonarSearch).
 
 ## Installation
 
