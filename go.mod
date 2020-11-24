@@ -14,7 +14,7 @@ require (
 	github.com/spf13/cobra v1.1.1
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/stretchr/testify v1.6.1
-	github.com/valyala/fastjson v1.6.1
+	github.com/valyala/fastjson v1.6.3
 	golang.org/x/net v0.0.0-20201010224723-4f7140c49acb // indirect
 	gopkg.in/ini.v1 v1.57.0 // indirect
 )
