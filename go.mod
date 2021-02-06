@@ -8,7 +8,7 @@ require (
 	github.com/go-ini/ini v1.62.0
 	github.com/klauspost/compress v1.11.1 // indirect
 	github.com/klauspost/pgzip v1.2.5
-	github.com/logrusorgru/aurora v2.0.3+incompatible
+	github.com/logrusorgru/aurora/v3 v3.0.0
 	github.com/logrusorgru/aurora/v3 v3.0.0
 	github.com/smartystreets/goconvey v1.6.4 // indirect
 	github.com/spf13/cobra v1.1.1
