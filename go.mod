@@ -7,6 +7,7 @@ require (
 	github.com/go-ini/ini v1.66.2
 	github.com/klauspost/pgzip v1.2.5
 	github.com/logrusorgru/aurora v2.0.3+incompatible
+	github.com/logrusorgru/aurora/v3 v3.0.0
 	github.com/spf13/cobra v1.3.0
 	github.com/stretchr/testify v1.7.0
 	github.com/valyala/fastjson v1.6.3
