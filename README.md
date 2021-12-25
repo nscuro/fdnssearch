@@ -8,11 +8,11 @@
 
 ## Installation
 
-`GO111MODULE=on go get -v github.com/nscuro/fdnssearch/...`
+`go install github.com/nscuro/fdnssearch/cmd/fdnssearch@latest`
 
 Alternatively, clone this repo and run `make install`. Make sure `$GOPATH/bin` is in your `$PATH`.
 
-*fdnssearch* requires Go >= 1.14
+*fdnssearch* requires Go >= 1.17
 
 Prebuilt binaries are available [as well](https://github.com/nscuro/fdnssearch/releases/).
 
