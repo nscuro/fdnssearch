@@ -4,7 +4,7 @@ go 1.17
 
 require (
 	github.com/PuerkitoBio/goquery v1.8.0
-	github.com/go-ini/ini v1.66.3
+	github.com/go-ini/ini v1.67.0
 	github.com/klauspost/pgzip v1.2.5
 	github.com/logrusorgru/aurora v2.0.3+incompatible
 	github.com/logrusorgru/aurora/v3 v3.0.0
