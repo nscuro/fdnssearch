@@ -1,6 +1,6 @@
 module github.com/nscuro/fdnssearch
 
-go 1.17
+go 1.19
 
 require (
 	github.com/PuerkitoBio/goquery v1.8.0
