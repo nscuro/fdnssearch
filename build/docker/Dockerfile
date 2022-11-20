@@ -1,4 +1,4 @@
-FROM golang:1.17.7-alpine as build
+FROM golang:1.19.3-alpine as build
 RUN apk --no-cache add build-base gcc git
 WORKDIR /opt/fdnssearch
 COPY . .
